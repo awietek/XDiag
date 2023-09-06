@@ -1,6 +1,7 @@
 add_executable(tests
   tests.cpp
   bitops/test_bitops.cpp
+  bitops/test_bits_static.cpp
 
   io/test_args.cpp
   io/test_file_toml.cpp
