@@ -35,7 +35,9 @@ int main() {
   // compute groundstate (known to be at k=0)
   Log("Computing ground state ...");
   auto block = Spinhalf(n_sites, n_up, group, irreps[0]);
-  auto gs = groundstate(bonds, block);
+  auto [e0, gs] = eig0(bonds, block);
+  // auto gs = resgs.eigenvectors.col(0);
+  gs.make_complex();
   Log("done.");
 
   for (int q = 0; q < n_sites; ++q) {
@@ -46,15 +48,17 @@ int main() {
     auto S_of_q = symmetrized_operator(Bond("SZ", 0), group, irreps[q]);
     auto block_q = Spinhalf(n_sites, n_up, group, irreps[q]);
     auto v0 = State(block_q);
+    v0.make_complex();
     apply(S_of_q, gs, v0);
+
 
     double nrm = norm(v0);
     v0 /= nrm;
 
     // Perform 200 Lanczos iterations for dynamics starting from v0
-    auto tmat = lanczos_eigenvalues_inplace(bonds, v0, 0, 0., 200, 1e-7);
-    auto alphas = tmat.alphas();
-    auto betas = tmat.betas();
+    auto res = eigvals_lanczos(bonds, block_q, v0, 1, 0., 200, true, 1e-7);
+    auto alphas = res.alphas;
+    auto betas = res.betas;
 
     // Write alphas, betas, and norm to file for further processing
     alphas.save(

@@ -28,7 +28,7 @@ int main() {
 
   // Compute eigendecomposition of Hamiltonian
   Log("Creating H");
-  mat H = matrix_real(bonds, block);
+  mat H = matrix(bonds, block);
 
   Log("Diagonalizing H");
   vec eigval;
@@ -49,7 +49,7 @@ int main() {
     }
 
     // Compute matrix elements of S(q)
-    cx_mat S_of_q = matrix_cplx(S_of_q_bonds, block);
+    cx_mat S_of_q = matrixC(S_of_q_bonds, block);
     cx_mat S_of_q_eig = eigvec.t() * S_of_q * eigvec;
     S_of_q_eig.save(hdf5_name(outfile, format("S_of_q_{}_eig", q), append));
   }

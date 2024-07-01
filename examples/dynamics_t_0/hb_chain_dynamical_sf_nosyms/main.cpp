@@ -19,7 +19,10 @@ int main() {
   // compute groundstate (known to be at k=0)
   Log("Computing ground state ...");
   auto block = Spinhalf(n_sites, n_up);
-  auto gs = groundstate(bonds, block);
+  // auto gs = groundstate(bonds, block);
+  auto resgs = eigs_lanczos(bonds, block);
+  auto gs = resgs.eigenvectors.col(0);
+  gs.make_complex();
   Log("done.");
 
   for (int q = 0; q < n_sites; ++q) {
@@ -34,14 +37,15 @@ int main() {
 
     // Compute S(q) |g.s.>
     auto v0 = State(block);
+    v0.make_complex();
     apply(S_of_q, gs, v0);
     double nrm = norm(v0);
     v0 /= nrm;
 
     // Perform 200 Lanczos iterations for dynamics starting from v0
-    auto tmat = lanczos_eigenvalues_inplace(bonds, v0, 0, 0., 200, 1e-7);
-    auto alphas = tmat.alphas();
-    auto betas = tmat.betas();
+    auto res = eigvals_lanczos(bonds, block, v0, 1, 0., 200, true, 1e-7);
+    auto alphas = res.alphas;
+    auto betas = res.betas;
 
     // Write alphas, betas, and norm to file for further processing
     alphas.save(

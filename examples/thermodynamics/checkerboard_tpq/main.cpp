@@ -6,6 +6,8 @@ int main(int argc, char **argv) {
   using namespace arma;
   using fmt::format;
 
+  say_hello();
+
   // Parse input arguments
   assert(argc == 7);
   int n_sites = atoi(argv[1]);              // number of sites
@@ -41,13 +43,13 @@ int main(int argc, char **argv) {
   tic();
   int n_eig_to_converge = 3;
   int max_iterations = 300;
-  auto tmat = lanczos_eigenvalues(bonds, block, n_eig_to_converge, 1e-12,
+  auto tmat = eigvals_lanczos(bonds, block, n_eig_to_converge, 1e-12,
                                   max_iterations, seed, 1e-7);
   toc();
 
-  ofile["Alphas"] = tmat.alphas();
-  ofile["Betas"] = tmat.betas();
-  ofile["Eigenvalues"] = tmat.eigenvalues();
+  ofile["Alphas"] = tmat.alphas;
+  ofile["Betas"] = tmat.betas;
+  ofile["Eigenvalues"] = tmat.eigenvalues;
   ofile["Dimension"] = block.size();
 
   return EXIT_SUCCESS;

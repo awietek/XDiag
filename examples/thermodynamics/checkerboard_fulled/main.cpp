@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
   Log("Diagonalizing ...");
   tic();
   vec eigval;
-  cx_mat eigvec;
+  mat eigvec;
   eig_sym(eigval, eigvec, H);
   ofile["Eigenvalues"] = eigval;
   toc();

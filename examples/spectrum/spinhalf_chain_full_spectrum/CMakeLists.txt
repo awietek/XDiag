@@ -4,6 +4,6 @@ project(
   spinhalf_chain_full_spectrum
 )
 
+find_package(xdiag REQUIRED HINTS "../../../install")
 add_executable(main main.cpp)
-find_package(xdiag REQUIRED HINTS "../../install")
 target_link_libraries(main PUBLIC xdiag::xdiag)

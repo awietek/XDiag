@@ -1,6 +1,6 @@
 #include <xdiag/all.hpp>
 
-void measure_density(int n_sites, xdiag::StateCplx const &v) {
+void measure_density(int n_sites, xdiag::State const &v) {
   using namespace xdiag;
 
   for (int i = 0; i < n_sites; ++i) {

@@ -24,7 +24,7 @@ int main(int argc, char **argv) {
       format("{}/outfile.N.{}.nup.{}.k.{}.seed.{}.iters.{}.h5", outdir, n_sites,
              n_up, k, seed, n_iters);
   std::string scratchdir =
-      format("/scratch/awietek/tmp/ftlm.N.{}.nup.{}.k.{}.seed.{}.iters.{}/",
+      format("/scratch/martin/tmp/ftlm.N.{}.nup.{}.k.{}.seed.{}.iters.{}/",
              n_sites, n_up, k, seed, n_iters);
   std::filesystem::create_directories(outdir);
   std::filesystem::create_directories(scratchdir);
@@ -59,7 +59,7 @@ int main(int argc, char **argv) {
   dim_k(0) = block.size();
   dim_k.save(hdf5_name(outfile, "dim", append));
 
-  auto rstate = random_state_cplx(block, seed);
+  auto rstate = random_state(block, seed);
   auto dump_V = [scratchdir](int iteration, cx_vec const &vec) {
     std::string filename = format("{}/V{}.arm", scratchdir, iteration);
     Log("writing V vector {} -> {}", iteration, filename);

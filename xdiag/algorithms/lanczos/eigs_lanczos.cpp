@@ -14,10 +14,10 @@ namespace xdiag {
 
 eigs_lanczos_result_t eigs_lanczos(BondList const &bonds,
                                    block_variant_t const &block,
+                                   State &state0,
                                    int64_t neigvals, double precision,
                                    int64_t max_iterations, bool force_complex,
-                                   double deflation_tol,
-                                   int64_t random_seed) try {
+                                   double deflation_tol) try {
   if (neigvals < 1) {
     XDIAG_THROW("Argument \"neigvals\" needs to be >= 1");
   }
@@ -26,12 +26,10 @@ eigs_lanczos_result_t eigs_lanczos(BondList const &bonds,
   }
 
   bool cplx = bonds.iscomplex() || iscomplex(block) || force_complex;
-  State state0(block, !cplx);
-  fill(state0, RandomState(random_seed));
 
   // Perform first run to compute eigenvalues
-  auto r = eigvals_lanczos(bonds, block, neigvals, precision, max_iterations,
-                           force_complex, deflation_tol, random_seed);
+  auto r = eigvals_lanczos(bonds, block, state0, neigvals, precision, max_iterations,
+                           force_complex, deflation_tol);
 
   // Perform second run to compute the eigenvectors
   arma::mat tmat = arma::diagmat(r.alphas);
@@ -50,7 +48,6 @@ eigs_lanczos_result_t eigs_lanczos(BondList const &bonds,
 
   auto converged = [](Tmatrix const &) -> bool { return false; };
 
-  fill(state0, RandomState(random_seed));
   State eigenvectors(block, !cplx, neigvals);
 
   int64_t iter = 1;
@@ -105,4 +102,32 @@ eigs_lanczos_result_t eigs_lanczos(BondList const &bonds,
   XDIAG_RETHROW(e);
   return eigs_lanczos_result_t();
 }
+
+// starting from random vector
+eigs_lanczos_result_t eigs_lanczos(BondList const &bonds,
+                                   block_variant_t const &block,
+                                   int64_t neigvals, double precision,
+                                   int64_t max_iterations, bool force_complex,
+                                   double deflation_tol,
+                                   int64_t random_seed) try {
+  if (neigvals < 1) {
+    XDIAG_THROW("Argument \"neigvals\" needs to be >= 1");
+  }
+  if (!bonds.ishermitian()) {
+    XDIAG_THROW("Input BondList is not hermitian");
+  }
+
+  bool cplx = bonds.iscomplex() || iscomplex(block) || force_complex;
+  State state0(block, !cplx);
+  fill(state0, RandomState(random_seed));
+
+  auto r = eigs_lanczos(bonds, block, state0, neigvals, precision, max_iterations, force_complex, deflation_tol);
+
+  return {r.alphas,     r.betas,       r.eigenvalues,
+          r.eigenvectors, r.niterations, r.criterion};
+} catch (Error const &e) {
+  XDIAG_RETHROW(e);
+  return eigs_lanczos_result_t();
+}
+
 } // namespace xdiag

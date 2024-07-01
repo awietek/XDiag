@@ -5,5 +5,5 @@ project(
 )
 
 add_executable(main main.cpp)
-find_package(xdiag REQUIRED HINTS "../../..")
-target_link_libraries(xdiag PUBLIC ${XDIAG_LIBRARIES})
+find_package(xdiag REQUIRED HINTS "../../../install")
+target_link_libraries(main PUBLIC xdiag::xdiag)

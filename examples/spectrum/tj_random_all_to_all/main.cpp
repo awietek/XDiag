@@ -33,7 +33,7 @@ int main() {
   auto block = tJ(n_sites, n_up, n_dn);
 
   // Compute the full Hamiltonian matrix
-  auto H = matrix_cplx(bonds, block);
+  auto H = matrixC(bonds, block);
 
   // Compute all eigenvalues of H
   vec eigs;
